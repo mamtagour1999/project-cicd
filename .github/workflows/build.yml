@@ -5,7 +5,7 @@ on:
     branches:
       - main
 
-job:
+jobs:
   build:
     runs-on: ubuntu-latest
 
@@ -39,9 +39,7 @@ job:
           file: ./Dockerfile
           push: true
           tags: msjabb1015/project-cicd:latest
-  
   deploy:
-    - name: deploy to ec2
       needs: build
       runs-on: ubuntu-latest
 
@@ -49,7 +47,7 @@ job:
         - name: setup ssh key
           run: |
             echo "${{secrets.EC2_SSH_PRIVATE_KEY}}" > application.pem
-            chmod 400 appliaion.pem
+            chmod 400 application.pem
         
         - name: ssh to ec2 testing
           run: ssh -i application.pem -o StrictHostKeyChecking=no ubuntu@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
@@ -59,12 +57,13 @@ job:
         - name: ssh to ec2 and deploy
           run: ssh -i application.pem -o StrictHostKeyChecking=no ubuntu@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
                docker login -u "${{secrets.DOCKER_USERNAME}}" -p "${{secrets.DOCKER_PASSWORD}}"
-               docker stop project-cicd:latest || true
-               docker rmi -f ${{secrets.DOCKER_USERNAME}}/project-cicd:latest
+               docker stop project-cicd || true
+               docker rm project-cicd || true
+               docker rmi -f msjabb1015/project-cicd:latest
 
-               docker pull ${{secrets.DOCKER_USERNAME}}/project-cicd:latest
-               docker run --name=project-cicd -d -p 8080:8080 msjabb1015/project-cicd:latest
-
+               docker pull msjabb1015/project-cicd:latest
+               docker run --name project-cicd -d -p 8080:8080 msjabb1015/project-cicd:latest
+               EOF
 
                      
                
