@@ -56,7 +56,7 @@ jobs:
 
         - name: ssh to ec2 and deploy
           run: ssh -i application.pem -o StrictHostKeyChecking=no ec2-user@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
-               docker login -u "${{secrets.DOCKER_USERNAME}}" -p "${{secrets.DOCKER_PASSWORD}}"
+               echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
                docker stop project-cicd || true
                docker rm project-cicd || true
                docker rmi -f msjabb1015/project-cicd:latest
