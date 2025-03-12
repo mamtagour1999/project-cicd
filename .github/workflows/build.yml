@@ -50,12 +50,12 @@ jobs:
             chmod 400 application.pem
         
         - name: ssh to ec2 testing
-          run: ssh -i application.pem -o StrictHostKeyChecking=no ubuntu@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
+          run: ssh -i application.pem -o StrictHostKeyChecking=no ec2-user@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
                echo "connected successfully"
                EOF
 
         - name: ssh to ec2 and deploy
-          run: ssh -i application.pem -o StrictHostKeyChecking=no ubuntu@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
+          run: ssh -i application.pem -o StrictHostKeyChecking=no ec2-user@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
                docker login -u "${{secrets.DOCKER_USERNAME}}" -p "${{secrets.DOCKER_PASSWORD}}"
                docker stop project-cicd || true
                docker rm project-cicd || true
