@@ -55,15 +55,16 @@ jobs:
                EOF
 
         - name: ssh to ec2 and deploy
-          run: ssh -i application.pem -o StrictHostKeyChecking=no ec2-user@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
-               echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-               docker stop project-cicd || true
-               docker rm project-cicd || true
-               docker rmi -f msjabb1015/project-cicd:latest
+          run: |
+             ssh -i application.pem -o StrictHostKeyChecking=no ec2-user@${{secrets.EC2_PUBLIC_IP}} << 'EOF'
+                echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+                docker stop project-cicd || true
+                docker rm project-cicd || true
+                docker rmi -f msjabb1015/project-cicd:latest
 
-               docker pull msjabb1015/project-cicd:latest
-               docker run --name project-cicd -d -p 8080:8080 msjabb1015/project-cicd:latest
-               EOF
+                docker pull msjabb1015/project-cicd:latest
+                docker run --name project-cicd -d -p 8080:8080 msjabb1015/project-cicd:latest
+             EOF
 
                      
                
